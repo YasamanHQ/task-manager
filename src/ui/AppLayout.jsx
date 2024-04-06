@@ -2,10 +2,10 @@ import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { useState } from "react";
-import NewTaskModal from "./NewTaskModal";
+import NewTaskModal from "../pages/NewTaskModal";
 import Spinner from "./Spinner";
-import { usePlatform } from "../pages/platform/PlatformContext";
-import TaskDetailModal from "./TaskDetailModal";
+import { usePlatform } from "../features/platform/PlatformContext";
+import TaskDetailModal from "../pages/TaskDetailModal";
 
 function AppLayout() {
   const [boards, setBoards] = useState([

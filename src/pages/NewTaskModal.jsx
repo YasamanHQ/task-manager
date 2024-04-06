@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
-import { usePlatform } from "../pages/platform/PlatformContext";
+import { usePlatform } from "../features/platform/PlatformContext";
 
 function NewTaskModal({ onOpen }) {
   const [newTitle, setNewTitle] = useState("");

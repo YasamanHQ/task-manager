@@ -1,9 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./ui/AppLayout";
-import Platform from "./pages/platform/Platform";
-import MarketingPlan from "./pages/MarketingPlan";
-import Roadmap from "./pages/Roadmap";
-import NewBoard from "./pages/NewBoard";
+import Platform from "./features/platform/Platform";
+import MarketingPlan from "./features/MarketingPlan";
+import Roadmap from "./features/Roadmap";
+import NewBoard from "./features/NewBoard";
 function App() {
   return (
     <BrowserRouter>

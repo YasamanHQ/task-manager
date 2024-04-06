@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { usePlatform } from "../pages/platform/PlatformContext";
+import { usePlatform } from "../features/platform/PlatformContext";
 import Spinner from "../ui/Spinner";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 
