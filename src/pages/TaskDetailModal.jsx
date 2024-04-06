@@ -5,10 +5,7 @@ import { HiOutlineDotsVertical } from "react-icons/hi";
 
 function TaskDetailModal() {
   const { onShowTask, isLoading, selectedtask } = usePlatform();
-  // const [checkedState, setCheckedState] = useState(
-  //   new Array(selectedtask.subtasks.length).fill(false),
-  // );
-  // console.log(selectedtask.subtasks);
+
   const [isChecked, setIsChecked] = useState(false);
 
   const handleCloseModal = (e) => {
@@ -17,25 +14,9 @@ function TaskDetailModal() {
     }
   };
 
-  function handleToggleTask(selectedTasksubtask, index) {
+  function handleToggleTask() {
     setIsChecked((isChecked) => !isChecked);
-    // setIsChecked(
-    //   (isChecked) =>
-    //     selectedTasksubtask === selectedtask.subtasks[index] && !isChecked,
-    // );
-    // if (isChecked) {
-    //   selectedtask.finishedSubtasks.push(selectedtask.subtasks[index]);
-    // }
-    // console.log(selectedtask.finishedSubtasks);
   }
-
-  // const handleOnChange = (position) => {
-  //   const updatedCheckedState = checkedState.map((item, index) =>
-  //     index === position ? !item : item,
-  //   );
-
-  //   setCheckedState(updatedCheckedState);
-  // };
 
   return (
     <>
@@ -68,11 +49,7 @@ function TaskDetailModal() {
                   <input
                     type="checkbox"
                     checked={isChecked}
-                    onChange={() =>
-                      handleToggleTask(selectedTasksubtask, index)
-                    }
-                    // checked={checkedState[index]}
-                    // onChange={() => handleOnChange(index)}
+                    onChange={handleToggleTask}
                   />
                   <span> {selectedTasksubtask} </span>
                 </div>
