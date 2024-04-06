@@ -9,8 +9,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<AppLayout />}>
-          <Route index element={<Navigate replace to="platform" />} />
-          <Route path="/platform" element={<Platform />} />
+          <Route index element={<Navigate replace to="platformLaunch" />} />
+          <Route path="/platformLaunch" element={<Platform />} />
           <Route path="/marketingPlan" element={<MarketingPlan />} />
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/newBoard" element={<NewBoard />} />

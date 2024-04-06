@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const PlatformContext = createContext();
 
@@ -33,16 +27,6 @@ function PlatformProvider({ children }) {
     }
   }, []);
 
-  // const getData = useCallback(async () => {
-  //   const res = await fetch("https://660424af2393662c31d0b94c.mockapi.io/list");
-  //   const data = await res.json();
-  //   setTasks(data);
-  // }, []);
-
-  // useEffect(() => {
-  //   getData();
-  // }, [getData]);
-
   const todoList = tasks.filter((todoTask) => todoTask.taskStatus === "Todo");
   const doingList = tasks.filter(
     (doingTask) => doingTask.taskStatus === "Doing",
@@ -68,7 +52,7 @@ function PlatformProvider({ children }) {
     setIsLoading(false);
   };
 
-  console.log(getSelectedTask.subtasks);
+  // console.log(getSelectedTask.subtasks);
 
   return (
     <PlatformContext.Provider

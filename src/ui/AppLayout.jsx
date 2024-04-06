@@ -6,6 +6,7 @@ import NewTaskModal from "../pages/NewTaskModal";
 import Spinner from "./Spinner";
 import { usePlatform } from "../features/platform/PlatformContext";
 import TaskDetailModal from "../pages/TaskDetailModal";
+import ShowSidebarBtn from "./ShowSidebarBtn";
 
 function AppLayout() {
   const [boards, setBoards] = useState([
@@ -25,21 +26,19 @@ function AppLayout() {
 
   return (
     <div
-      className={`relative grid h-[100vh] w-[100vw] grid-cols-[18rem_1fr] grid-rows-[auto_1fr] overflow-hidden bg-[--app-bg-color] font-sans transition-all duration-300 dark:bg-[--dark-app-bg-color] ${isHidden ? `grid-cols-[0.01rem_1fr]` : ``}`}
+      className={`relative grid h-[100vh] w-[100vw] grid-cols-[18rem_1fr] grid-rows-[auto_1fr] overflow-hidden bg-[--app-bg-color] font-sans transition-all duration-300 dark:bg-[--dark-app-bg-color]`}
     >
       <Header isHidden={isHidden} onOpen={setIsOpen} />
       <Sidebar isHidden={isHidden} onHide={handleSidebar} boards={boards} />
+      <ShowSidebarBtn onHide={handleSidebar} isHidden={isHidden} />
 
       {isOpen && <NewTaskModal onOpen={setIsOpen} />}
       {showTask && <TaskDetailModal />}
 
-      <main className="relative h-[84vh] overflow-auto">
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          // <Outlet context={[tasks]} />
-          <Outlet />
-        )}
+      <main
+        className={`relative h-[84vh] overflow-auto transition-all duration-300 ${isHidden ? `w-[100vw] translate-x-[-18rem] transform` : ``}`}
+      >
+        {isLoading ? <Spinner /> : <Outlet />}
       </main>
     </div>
   );

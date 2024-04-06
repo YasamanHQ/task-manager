@@ -1,22 +1,28 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 
 function Header({ onOpen }) {
+  const { pathname } = useLocation();
+
   return (
-    <div className="col-span-full grid grid-cols-[18rem_1fr] border-b-2 border-b-[--border-color] bg-[--bg-color] px-6 transition-all duration-300 dark:border-b-[--dark-border-color] dark:bg-[--dark-bg-color]">
+    <header className="col-span-full grid w-[100vw] grid-cols-[18rem_1fr] border-b-2 border-b-[--border-color] bg-[--bg-color] px-6 transition-all duration-300 dark:border-b-[--dark-border-color] dark:bg-[--dark-bg-color]">
       <div className="flex h-[100px] items-center gap-3 transition-all duration-300 dark:text-[--font-color]">
         <img src="/logo.png" alt="logo-img" className="mt-1" />
         <Link
-          to="/platform"
+          to="/platformLaunch"
           className="inline-block text-[30px] font-bold text-[--light-title-font-color] transition-all duration-300 dark:text-[--font-color]"
         >
           kanban
         </Link>
       </div>
 
-      <header className="flex items-center justify-between font-semibold text-[--light-title-font-color] transition-all duration-300">
+      <div className="flex items-center justify-between font-semibold text-[--light-title-font-color] transition-all duration-300">
         <h1 className="text-2xl transition-all duration-300 dark:text-[--font-color]">
-          Platform Launch
+          {pathname.slice(0).charAt(1).toUpperCase() +
+            pathname
+              .slice(2)
+              .split(/(?=[A-Z])/)
+              .join(" ")}
         </h1>
 
         <div className="flex justify-between gap-4">
@@ -27,12 +33,12 @@ function Header({ onOpen }) {
             +Add New Task
           </button>
 
-          <span className="self-center text-2xl text-[--sidebar-font-color]">
+          <span className="cursor-pointer self-center text-2xl text-[--sidebar-font-color] transition-all duration-300 hover:text-[--purple-color]">
             <HiOutlineDotsVertical />
           </span>
         </div>
-      </header>
-    </div>
+      </div>
+    </header>
   );
 }
 

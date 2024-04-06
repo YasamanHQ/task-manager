@@ -3,20 +3,21 @@ import { BsWindowSidebar } from "react-icons/bs";
 import { IoSunny } from "react-icons/io5";
 import { BsFillMoonStarsFill } from "react-icons/bs";
 import { FaRegEyeSlash } from "react-icons/fa";
-import { FaRegEye } from "react-icons/fa";
 import { useEffect, useState } from "react";
 
 function Sidebar({ onHide, isHidden, boards }) {
-  const [toggle, setToggle] = useState(false);
+  const [toggle, setToggle] = useState(localStorage.getItem("toggle") || true);
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
 
   useEffect(() => {
+    localStorage.setItem("toggle", toggle);
     localStorage.setItem("theme", theme);
     document.body.className = theme;
-  }, [theme]);
+  }, [theme, toggle]);
 
   const handleToggle = () => {
     setToggle((toggle) => !toggle);
+    console.log(toggle);
     setTheme((theme) => (theme === "dark" ? "light" : "dark"));
   };
 
@@ -32,7 +33,7 @@ function Sidebar({ onHide, isHidden, boards }) {
         <ul className="mt-7 flex flex-col gap-y-6 text-sm font-bold">
           <li className="relative cursor-pointer text-[--sidebar-font-color] hover:text-[--purple-color]">
             <NavLink
-              to="/platform"
+              to="/platformLaunch"
               className="relative flex items-center gap-3"
             >
               <BsWindowSidebar />
@@ -78,9 +79,8 @@ function Sidebar({ onHide, isHidden, boards }) {
             <label className="inline-flex cursor-pointer items-center">
               <input
                 type="checkbox"
-                value=""
                 className="peer sr-only"
-                checked={toggle}
+                checked={JSON.parse(toggle)}
                 onChange={handleToggle}
               />
               <div className="peer relative h-6 w-11 rounded-full  bg-[--light-toggle-color] after:absolute after:start-[2px] after:top-0.5 after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[--purple-color] peer-checked:after:translate-x-full peer-checked:after:border-white rtl:peer-checked:after:-translate-x-full"></div>
@@ -92,22 +92,13 @@ function Sidebar({ onHide, isHidden, boards }) {
           </div>
         </div>
 
-        <div className="mt-4 flex cursor-pointer items-center gap-2 text-sm font-bold text-[--sidebar-font-color]">
+        <div className="mt-4 flex items-center gap-2 text-sm font-bold text-[--sidebar-font-color]">
           <FaRegEyeSlash className="h-4 w-4" />
           <span
-            className="inline-block transition-all duration-300 hover:text-[--purple-color]"
+            className="inline-block cursor-pointer transition-all duration-300 hover:text-[--purple-color]"
             onClick={onHide}
           >
             Hide Sidebar
-          </span>
-        </div>
-
-        <div
-          className={`fixed bottom-5 flex w-[170px] translate-x-[-210px] cursor-pointer items-center justify-center gap-2 rounded-r-full bg-[--purple-color] p-3 text-sm font-bold text-[--font-color] transition-all duration-300 ${isHidden ? `translate-x-[290px]` : ""}`}
-        >
-          <FaRegEye className="h-4 w-4" />
-          <span className="inline-block" onClick={onHide}>
-            Show Sidebar
           </span>
         </div>
       </div>
