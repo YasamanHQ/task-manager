@@ -7,7 +7,7 @@ function Platform() {
   const { todoList, doingList, doneList } = usePlatform();
 
   return (
-    <div className="flex gap-8 p-6">
+    <div className="flex gap-8">
       {/* Todo */}
       <div className="min-w-[260px] max-w-[300px]">
         <span className="text-sm font-semibold uppercase tracking-widest text-[--sidebar-font-color]">

@@ -36,7 +36,7 @@ function AppLayout() {
       {showTask && <TaskDetailModal />}
 
       <main
-        className={`relative h-[84vh] overflow-auto transition-all duration-300 ${isHidden ? `w-[100vw] translate-x-[-18rem] transform` : ``}`}
+        className={`relative h-[84vh] overflow-auto p-6 transition-all duration-300 ${isHidden ? `w-[100vw] translate-x-[-18rem] transform` : ``}`}
       >
         {isLoading ? <Spinner /> : <Outlet />}
       </main>
