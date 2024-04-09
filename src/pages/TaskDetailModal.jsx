@@ -17,20 +17,7 @@ function TaskDetailModal() {
   } = usePlatform();
 
   const [selectedSubtask, setSelectedSubtask] = useState([]);
-
-  useEffect(() => {
-    selectedTask.subtasks?.map((element, index) => {
-      if (selectedTask.finishedSubtasks?.includes(element)) {
-        indexArray.push(index);
-      }
-    });
-    setSelectedSubtask(indexArray);
-  }, [selectedTask]);
-
-  const handleSelectedStatus = (e) => {
-    onSelectedStatus(e.target.value);
-  };
-
+  const [showTheOption, setShowTheOption] = useState(false);
   const initialRender = useRef(false);
 
   useEffect(() => {
@@ -65,6 +52,19 @@ function TaskDetailModal() {
 
     initialRender.current = true;
   }, [selectedStatus]);
+
+  useEffect(() => {
+    selectedTask.subtasks?.map((element, index) => {
+      if (selectedTask.finishedSubtasks?.includes(element)) {
+        indexArray.push(index);
+      }
+    });
+    setSelectedSubtask(indexArray);
+  }, [selectedTask]);
+
+  const handleSelectedStatus = (e) => {
+    onSelectedStatus(e.target.value);
+  };
 
   const handleCloseModal = (e) => {
     if (e.target) {
@@ -148,6 +148,37 @@ function TaskDetailModal() {
     }
   };
 
+  const handleOptions = () => {
+    setShowTheOption((showTheOption) => !showTheOption);
+  };
+
+  const handleDeleteTask = () => {
+    const removeFinishedSubtask = async (id) => {
+      onIsLoading(true);
+      const finishedSubtask = await fetch(
+        `https://660424af2393662c31d0b94c.mockapi.io/list/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-type": "application/json",
+          },
+        },
+      );
+      const updatedSelectedTask = await finishedSubtask.json();
+      onGetSelectedTask(updatedSelectedTask);
+      onShowTask((showTask) => !showTask);
+      onIsLoading(false);
+
+      const getUpdatedTasks = await fetch(
+        "https://660424af2393662c31d0b94c.mockapi.io/list",
+      );
+      const updatedTasks = await getUpdatedTasks.json();
+      onAllTask(updatedTasks);
+    };
+
+    removeFinishedSubtask(selectedTask.id);
+  };
+
   return (
     <>
       <div
@@ -161,13 +192,29 @@ function TaskDetailModal() {
             <Spinner />
           ) : (
             <>
-              <div className="flex justify-between">
+              <div className="relative flex justify-between">
                 <h3 className="text-lg font-bold tracking-wide text-[--light-title-font-color] dark:text-[--font-color]">
                   {selectedTask.title}
                 </h3>
-                <span className="cursor-pointer self-center text-2xl text-[--sidebar-font-color] transition-all duration-300 hover:text-[--purple-color]">
+                <span
+                  onClick={handleOptions}
+                  className="cursor-pointer self-center text-2xl text-[--sidebar-font-color] transition-all duration-300 hover:text-[--purple-color]"
+                >
                   <HiOutlineDotsVertical />
                 </span>
+                {showTheOption && (
+                  <div className="absolute right-0 top-6 flex w-[150px] flex-col gap-y-3 rounded-md bg-white p-4 text-sm font-semibold shadow-xl shadow-[--dark-shadow-color]">
+                    <span className="cursor-pointer text-[--light-title-font-color]">
+                      Edit task
+                    </span>
+                    <span
+                      onClick={handleDeleteTask}
+                      className="cursor-pointer text-[--delete-color]"
+                    >
+                      Delete task
+                    </span>
+                  </div>
+                )}
               </div>
 
               <p className="mt-3 text-sm font-semibold text-[--sidebar-font-color]">
@@ -203,11 +250,11 @@ function TaskDetailModal() {
                 htmlFor="status"
                 className="mt-6 inline-block text-sm font-semibold tracking-wide text-[--sidebar-font-color] dark:text-[--font-color]"
               >
-                {" "}
-                Status{" "}
+                Status
               </label>
               <select
                 id="status"
+                name="status"
                 type="text"
                 className="input text-sm dark:valid:bg-[--dark-bg-color]"
                 value={selectedStatus}

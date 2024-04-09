@@ -37,8 +37,8 @@ function NewTaskModal({ onOpen }) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              title: newTitle,
-              description: newDescription,
+              title: newTitle.trim(),
+              description: newDescription.trim(),
               subtasks: newSubtasks,
               finishedSubtasks: [],
               taskStatus: newStatus,
