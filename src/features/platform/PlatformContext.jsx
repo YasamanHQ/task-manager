@@ -5,26 +5,28 @@ const PlatformContext = createContext();
 function PlatformProvider({ children }) {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [tasksLoading, setTasksLoading] = useState(false);
   const [showTask, setShowTask] = useState(false);
   const [getSelectedTask, setGetSelectedTask] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState("");
+
+  let indexArray = [];
 
   useEffect(() => {
-    try {
-      const getList = async () => {
-        setIsLoading(true);
+    const getList = async () => {
+      try {
+        setTasksLoading(true);
         const res = await fetch(
           "https://660424af2393662c31d0b94c.mockapi.io/list",
         );
         const data = await res.json();
         setTasks(data);
-
-        setIsLoading(false);
-      };
-
-      getList();
-    } catch (err) {
-      console.error(new Error("Oops! Fetching Data failed!"));
-    }
+        setTasksLoading(false);
+      } catch (err) {
+        console.error(new Error("Oops! Fetching Data failed!"));
+      }
+    };
+    getList();
   }, []);
 
   const todoList = tasks.filter((todoTask) => todoTask.taskStatus === "Todo");
@@ -49,10 +51,9 @@ function PlatformProvider({ children }) {
     );
     const selectedTask = await getSelectedTask.json();
     setGetSelectedTask(selectedTask);
+    setSelectedStatus(selectedTask.taskStatus);
     setIsLoading(false);
   };
-
-  // console.log(getSelectedTask.subtasks);
 
   return (
     <PlatformContext.Provider
@@ -62,11 +63,18 @@ function PlatformProvider({ children }) {
         doneList,
         onAllTask: setTasks,
         isLoading,
+        tasksLoading,
+        onTasksLoading: setTasksLoading,
+        onIsLoading: setIsLoading,
         onAddNewTask: handleAddNewTask,
         showTask,
         onShowTask: handleShowTask,
         onTaskDetails: handleShowTaskDetails,
-        selectedtask: getSelectedTask,
+        selectedTask: getSelectedTask,
+        onGetSelectedTask: setGetSelectedTask,
+        indexArray,
+        selectedStatus,
+        onSelectedStatus: setSelectedStatus,
       }}
     >
       {children}

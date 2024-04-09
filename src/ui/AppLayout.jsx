@@ -18,7 +18,7 @@ function AppLayout() {
   const [isHidden, setIsHidden] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const { isLoading, showTask } = usePlatform();
+  const { tasksLoading, showTask } = usePlatform();
 
   const handleSidebar = () => {
     setIsHidden((isHidden) => !isHidden);
@@ -38,7 +38,7 @@ function AppLayout() {
       <main
         className={`relative h-[84vh] overflow-auto p-6 transition-all duration-300 ${isHidden ? `w-[100vw] translate-x-[-18rem] transform` : ``}`}
       >
-        {isLoading ? <Spinner /> : <Outlet />}
+        {tasksLoading ? <Spinner /> : <Outlet />}
       </main>
     </div>
   );

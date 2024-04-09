@@ -8,7 +8,7 @@ function NewTaskModal({ onOpen }) {
   const [newSubtasks, setNewSubtasks] = useState([""]);
   const [newStatus, setNewStatus] = useState("Todo");
 
-  const { onAddNewTask } = usePlatform();
+  const { onAddNewTask, onAllTask, onTasksLoading } = usePlatform();
 
   const handleCloseModal = (e) => {
     if (e.target) {
@@ -18,7 +18,6 @@ function NewTaskModal({ onOpen }) {
 
   const handleAddSubtask = (e) => {
     e.preventDefault();
-
     setNewSubtasks([...newSubtasks, ""]);
   };
 
@@ -30,6 +29,8 @@ function NewTaskModal({ onOpen }) {
 
     const createNewTask = async () => {
       try {
+        onTasksLoading(true);
+
         const postTask = await fetch(
           "https://660424af2393662c31d0b94c.mockapi.io/list",
           {
@@ -46,6 +47,13 @@ function NewTaskModal({ onOpen }) {
         );
         const data = await postTask.json();
         console.log(data);
+
+        const getUpdatedTasks = await fetch(
+          "https://660424af2393662c31d0b94c.mockapi.io/list",
+        );
+        const updatedTasks = await getUpdatedTasks.json();
+        onAllTask(updatedTasks);
+        onTasksLoading(false);
       } catch (err) {
         console.error(new Error("Something went wrong!"));
       }
@@ -61,9 +69,7 @@ function NewTaskModal({ onOpen }) {
     };
 
     createNewTask();
-
     onAddNewTask(newTask);
-
     onOpen((isOpen) => !isOpen);
   };
 
@@ -130,7 +136,8 @@ function NewTaskModal({ onOpen }) {
 
               <button
                 className="mt-2 cursor-pointer text-3xl text-[--sidebar-font-color] transition-all duration-300 hover:text-[--purple-color]"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   const newInputs = newSubtasks.filter((_, i) => i !== index);
                   setNewSubtasks(newInputs);
                 }}

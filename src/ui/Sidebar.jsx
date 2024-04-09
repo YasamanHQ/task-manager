@@ -1,4 +1,4 @@
-import { Link, NavLink, Navigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { BsWindowSidebar } from "react-icons/bs";
 import { IoSunny } from "react-icons/io5";
 import { BsFillMoonStarsFill } from "react-icons/bs";
@@ -17,7 +17,6 @@ function Sidebar({ onHide, isHidden, boards }) {
 
   const handleToggle = () => {
     setToggle((toggle) => !toggle);
-    console.log(toggle);
     setTheme((theme) => (theme === "dark" ? "light" : "dark"));
   };
 
