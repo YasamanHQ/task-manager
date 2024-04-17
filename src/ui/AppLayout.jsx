@@ -18,7 +18,7 @@ function AppLayout() {
   const [isHidden, setIsHidden] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
-  const { tasksLoading, showTask } = usePlatform();
+  const { tasksLoading, showTask, editIsOpen } = usePlatform();
 
   const handleSidebar = () => {
     setIsHidden((isHidden) => !isHidden);
@@ -26,13 +26,15 @@ function AppLayout() {
 
   return (
     <div
-      className={`relative grid h-[100vh] w-[100vw] grid-cols-[18rem_1fr] grid-rows-[auto_1fr] overflow-hidden bg-[--app-bg-color] font-sans transition-all duration-300 dark:bg-[--dark-app-bg-color]`}
+      className={`bg-app-bg-color dark:bg-dark-border-color relative grid h-[100vh] w-[100vw] grid-cols-[18rem_1fr] grid-rows-[auto_1fr] overflow-hidden font-sans transition-all duration-300`}
     >
       <Header isHidden={isHidden} onOpen={setIsOpen} />
       <Sidebar isHidden={isHidden} onHide={handleSidebar} boards={boards} />
       <ShowSidebarBtn onHide={handleSidebar} isHidden={isHidden} />
 
-      {isOpen && <NewTaskModal onOpen={setIsOpen} />}
+      {(isOpen || editIsOpen) && (
+        <NewTaskModal isOpen={isOpen} onOpen={setIsOpen} />
+      )}
       {showTask && <TaskDetailModal />}
 
       <main

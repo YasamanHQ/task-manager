@@ -1,5 +1,9 @@
 function Roadmap() {
-  return <div>Roadmap</div>;
+  return (
+    <div>
+      <p className="text-font-color font-bold"> Roadmap Content </p>
+    </div>
+  );
 }
 
 export default Roadmap;

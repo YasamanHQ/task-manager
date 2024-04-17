@@ -2,49 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* light theme */
-  --bg-color: #ecebeb;
-  --border-color: #d8d8d8;
-  --app-bg-color: #dddcea;
-  --light-title-font-color: #262630;
-  --light-toggle-color: #676871;
-  --add-item-bg-color: #ecebeb91;
-  --input-ring-color: #54545e;
-  --hover-button-purple-color: #645fc6be;
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-  --sidebar-font-color: #878995;
-  --purple-color: #645fc6;
-  --font-color: #fdfeff;
-  --items-bg-color: #2c2c38;
-  --add-item-modal-bg-color: #03030375;
-  --delete-color: #d60000;
-
-  /* dark theme */
-  --dark-bg-color: #2c2c38;
-  --dark-border-color: #31313d;
-  --dark-app-bg-color: #21212d;
-  --dark-add-item-bg-color: #2c2c3880;
-  --dark-shadow-color: #645fc623;
-  --dark-input-ring-color: #54545e;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-@layer components {
-  .input {
-    @apply mt-2 block w-full rounded-md bg-transparent p-2 outline-none ring-2 ring-[--border-color] transition-all duration-300 placeholder:text-[14px] placeholder:opacity-60 focus:ring-[--purple-color] dark:ring-[--dark-input-ring-color];
+  ::-webkit-scrollbar {
+    display: none;
   }
 }
 
 .active {
-  @apply z-[1] text-[--font-color] before:absolute before:right-[-12px] before:top-[-12px] before:z-[-1] before:block before:h-12 before:w-[300px] before:rounded-r-3xl before:bg-[--purple-color] before:content-[''];
+  @apply before:bg-purple-color text-font-color z-[1] before:absolute before:right-[-12px] before:top-[-12px] before:z-[-1] before:block before:h-12 before:w-[300px] before:rounded-r-3xl before:content-[''];
+}
+
+@layer components {
+  .input-label {
+    @apply mt-6 inline-block text-sm font-semibold;
+  }
+
+  .input {
+    @apply ring-border-color focus:ring-purple-color dark:ring-dark-input-ring-color dark:focus:ring-purple-color mt-2 block w-full rounded-md bg-transparent p-2 outline-none ring-2 transition-all duration-300 placeholder:text-[14px] placeholder:opacity-60;
+  }
+
+  .description-textarea {
+    @apply ring-border-color focus:ring-purple-color dark:ring-dark-input-ring-color mt-2 block h-[120px] w-full resize-none rounded-md bg-transparent p-2 outline-none ring-2 transition-all duration-300 placeholder:text-[14px] placeholder:opacity-60;
+  }
+
+  .button {
+    @apply bg-purple-color text-font-color w-full rounded-full px-6 py-2 text-sm font-semibold transition-all duration-300;
+  }
 }

@@ -2,57 +2,55 @@ import { useEffect, useRef, useState } from "react";
 import { usePlatform } from "../features/platform/PlatformContext";
 import Spinner from "../ui/Spinner";
 import { HiOutlineDotsVertical } from "react-icons/hi";
+import {
+  addFinishedSubtask,
+  changeTaskStatus,
+  deleteSelectedTask,
+  getList,
+  removeFinishedSubtask,
+} from "../services/apiTasks";
+import SelectStatus from "../ui/SelectStatus";
+import TaskOptionBox from "../ui/TaskOptionBox";
 
 function TaskDetailModal() {
   const {
+    onTasksLoading,
     onShowTask,
     isLoading,
     onIsLoading,
     selectedTask,
-    onGetSelectedTask,
+    onSelectedTaskData,
     indexArray,
     onAllTask,
     selectedStatus,
     onSelectedStatus,
+    onEditOpen,
   } = usePlatform();
 
   const [selectedSubtask, setSelectedSubtask] = useState([]);
   const [showTheOption, setShowTheOption] = useState(false);
   const initialRender = useRef(false);
 
+  // ----------------------------
+  // Updating task status:
   useEffect(() => {
+    const updatedTaskObject = { ...selectedTask, taskStatus: selectedStatus };
+
     if (initialRender.current) {
-      const changeTaskStatus = async (id) => {
-        try {
-          onIsLoading(true);
-
-          const newSelectedStatus = await fetch(
-            `https://660424af2393662c31d0b94c.mockapi.io/list/${id}`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                ...selectedTask,
-                taskStatus: selectedStatus,
-              }),
-            },
-          );
-          const updatedSelectedStatus = await newSelectedStatus.json();
-          console.log(updatedSelectedStatus);
-          // onGetSelectedTask(updatedSelectedStatus);
-          onIsLoading(false);
-        } catch (err) {
-          console.error(err);
-        }
+      const updateTaskStatus = async (id, updatedTaskObject) => {
+        onIsLoading(true);
+        const getNewStatus = await changeTaskStatus(id, updatedTaskObject);
+        onIsLoading(false);
       };
-      // console.log(selectedStatus);
 
-      changeTaskStatus(selectedTask.id);
+      updateTaskStatus(selectedTask.id, updatedTaskObject);
     }
 
     initialRender.current = true;
   }, [selectedStatus]);
 
+  // ----------------------------
+  // Checking the finished subtasks on initial render:
   useEffect(() => {
     selectedTask.subtasks?.map((element, index) => {
       if (selectedTask.finishedSubtasks?.includes(element)) {
@@ -62,58 +60,43 @@ function TaskDetailModal() {
     setSelectedSubtask(indexArray);
   }, [selectedTask]);
 
-  const handleSelectedStatus = (e) => {
-    onSelectedStatus(e.target.value);
-  };
-
+  // ----------------------------
+  // Closing TaskDetailModal:
   const handleCloseModal = (e) => {
     if (e.target) {
       onShowTask((showTask) => !showTask);
 
       const updateAllTasks = async () => {
-        const getUpdatedTasks = await fetch(
-          "https://660424af2393662c31d0b94c.mockapi.io/list",
-        );
-        const updatedTasks = await getUpdatedTasks.json();
-        onAllTask(updatedTasks);
+        const getTasks = await getList();
+        onAllTask(getTasks);
       };
       updateAllTasks();
     }
   };
 
+  // ----------------------------
+  // Checking and unchecking the checkboxes:
   const handleCheckbox = (e) => {
     let isSelected = e.target.checked;
     let selectedValue = parseInt(e.target.value);
     if (isSelected) {
       setSelectedSubtask([...selectedSubtask, selectedValue]);
 
-      const addFinishedSubtask = async (id) => {
-        try {
-          onIsLoading(true);
-
-          const finishedSubtask = await fetch(
-            `https://660424af2393662c31d0b94c.mockapi.io/list/${id}`,
-            {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                ...selectedTask,
-                finishedSubtasks: [
-                  ...selectedTask.finishedSubtasks,
-                  selectedTask.subtasks[selectedValue],
-                ],
-              }),
-            },
-          );
-          const updatedSelectedTask = await finishedSubtask.json();
-          onGetSelectedTask(updatedSelectedTask);
-          onIsLoading(false);
-        } catch (err) {
-          console.error(err);
-        }
+      const checkedList = {
+        ...selectedTask,
+        finishedSubtasks: [
+          ...selectedTask.finishedSubtasks,
+          selectedTask.subtasks[selectedValue],
+        ],
+      };
+      const addToFinishedSubtaskList = async (id, checkedList) => {
+        onIsLoading(true);
+        const updatedSelectedTask = await addFinishedSubtask(id, checkedList);
+        onSelectedTaskData(updatedSelectedTask);
+        onIsLoading(false);
       };
 
-      addFinishedSubtask(selectedTask.id);
+      addToFinishedSubtaskList(selectedTask.id, checkedList);
     } else {
       setSelectedSubtask((prevFinishedSubtasks) =>
         prevFinishedSubtasks.filter((subIndex) => subIndex !== selectedValue),
@@ -124,104 +107,92 @@ function TaskDetailModal() {
           finishedSubtask !== selectedTask.subtasks[selectedValue],
       );
 
-      const removeFinishedSubtask = async (id) => {
+      const finishedSubtasksList = {
+        ...selectedTask,
+        finishedSubtasks: unfinishedSubtask,
+      };
+
+      const removeFromFinishedSubtasks = async (id, finishedSubtasksList) => {
         onIsLoading(true);
-
-        const finishedSubtask = await fetch(
-          `https://660424af2393662c31d0b94c.mockapi.io/list/${id}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              ...selectedTask,
-              finishedSubtasks: unfinishedSubtask,
-            }),
-          },
+        const updatedSelectedTask = await removeFinishedSubtask(
+          id,
+          finishedSubtasksList,
         );
-
-        const updatedSelectedTask = await finishedSubtask.json();
-        onGetSelectedTask(updatedSelectedTask);
+        onSelectedTaskData(updatedSelectedTask);
         onIsLoading(false);
       };
 
-      removeFinishedSubtask(selectedTask.id);
+      removeFromFinishedSubtasks(selectedTask.id, finishedSubtasksList);
     }
   };
 
-  const handleOptions = () => {
-    setShowTheOption((showTheOption) => !showTheOption);
+  // ----------------------------
+  // Deleting task:
+  const handleDeleteTask = () => {
+    if (
+      confirm(
+        `Are you sure that you want to delete task "${selectedTask.title}"`,
+      )
+    ) {
+      const deleteTask = async (id) => {
+        const deleteTask = await deleteSelectedTask(id);
+        onShowTask((showTask) => !showTask);
+
+        onTasksLoading(true);
+        const getTasks = await getList();
+        onAllTask(getTasks);
+        onTasksLoading(false);
+      };
+
+      deleteTask(selectedTask.id);
+    }
   };
 
-  const handleDeleteTask = () => {
-    const removeFinishedSubtask = async (id) => {
-      onIsLoading(true);
-      const finishedSubtask = await fetch(
-        `https://660424af2393662c31d0b94c.mockapi.io/list/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-type": "application/json",
-          },
-        },
-      );
-      const updatedSelectedTask = await finishedSubtask.json();
-      onGetSelectedTask(updatedSelectedTask);
-      onShowTask((showTask) => !showTask);
-      onIsLoading(false);
-
-      const getUpdatedTasks = await fetch(
-        "https://660424af2393662c31d0b94c.mockapi.io/list",
-      );
-      const updatedTasks = await getUpdatedTasks.json();
-      onAllTask(updatedTasks);
-    };
-
-    removeFinishedSubtask(selectedTask.id);
+  // ----------------------------
+  // Display editing modal:
+  const handleEditTask = () => {
+    onEditOpen((editIsOpen) => !editIsOpen);
+    onShowTask((showTask) => !showTask);
   };
 
   return (
     <>
       <div
-        className="absolute bottom-0 left-0 right-0 top-0 z-10 bg-[--add-item-modal-bg-color]"
+        className="bg-add-item-modal-bg-color absolute bottom-0 left-0 right-0 top-0 z-10"
         onClick={handleCloseModal}
       ></div>
 
-      <div className="fixed left-[50%] top-[50%] z-20 w-[500px] -translate-x-1/2 -translate-y-1/2 transform overflow-auto rounded-md bg-[--bg-color] p-8 text-[--light-title-font-color] dark:bg-[--dark-bg-color] dark:text-[--font-color]">
+      <div className="bg-bkg-color text-light-title-font-color dark:text-font-color dark:bg-dark-bg-color fixed left-[50%] top-[50%] z-20 w-[500px] -translate-x-1/2 -translate-y-1/2 transform overflow-auto rounded-md p-8">
         <div className="relative flex h-full w-full flex-col justify-between">
           {isLoading ? (
             <Spinner />
           ) : (
             <>
               <div className="relative flex justify-between">
-                <h3 className="text-lg font-bold tracking-wide text-[--light-title-font-color] dark:text-[--font-color]">
+                <h3 className="text-light-title-font-color dark:text-font-color text-lg font-bold tracking-wide">
                   {selectedTask.title}
                 </h3>
                 <span
-                  onClick={handleOptions}
-                  className="cursor-pointer self-center text-2xl text-[--sidebar-font-color] transition-all duration-300 hover:text-[--purple-color]"
+                  onClick={() =>
+                    setShowTheOption((showTheOption) => !showTheOption)
+                  }
+                  className="text-sidebar-font-color hover:text-purple-color cursor-pointer self-center text-2xl transition-all duration-300"
                 >
                   <HiOutlineDotsVertical />
                 </span>
                 {showTheOption && (
-                  <div className="absolute right-0 top-6 flex w-[150px] flex-col gap-y-3 rounded-md bg-white p-4 text-sm font-semibold shadow-xl shadow-[--dark-shadow-color]">
-                    <span className="cursor-pointer text-[--light-title-font-color]">
-                      Edit task
-                    </span>
-                    <span
-                      onClick={handleDeleteTask}
-                      className="cursor-pointer text-[--delete-color]"
-                    >
-                      Delete task
-                    </span>
-                  </div>
+                  <TaskOptionBox
+                    onEditTask={handleEditTask}
+                    onDeleteTask={handleDeleteTask}
+                  />
                 )}
               </div>
 
-              <p className="mt-3 text-sm font-semibold text-[--sidebar-font-color]">
+              <p className="text-sidebar-font-color mt-3 text-sm font-semibold">
                 {selectedTask.description}
               </p>
 
-              <span className="mb-3 mt-6 inline-block text-sm font-semibold tracking-wide text-[--sidebar-font-color] dark:text-[--font-color]">
+              <span className="text-sidebar-font-color dark:text-font-color mb-3 mt-6 inline-block text-sm font-semibold tracking-wide">
                 Subtasks ({`${selectedTask.finishedSubtasks.length} `} of
                 {` ${selectedTask.subtasks.length}`})
               </span>
@@ -229,17 +200,17 @@ function TaskDetailModal() {
               {selectedTask.subtasks.map((selectedTasksubtask, index) => (
                 <div
                   key={index}
-                  className="mb-3 rounded-md bg-[--app-bg-color] px-4 py-2 dark:bg-[--dark-app-bg-color]"
+                  className="bg-app-bg-color dark:bg-dark-border-color mb-3 rounded-md px-4 py-2"
                 >
                   <input
                     type="checkbox"
-                    className="h-4 w-4 bg-slate-500 align-middle accent-[--purple-color]"
+                    className="accent-purple-color h-4 w-4 bg-slate-500 align-middle"
                     value={index}
                     checked={selectedSubtask?.includes(index)}
                     onChange={handleCheckbox}
                   />
                   <span
-                    className={`ml-5 text-sm font-semibold ${selectedSubtask?.includes(index) && "text-[--sidebar-font-color] line-through dark:text-[--sidebar-font-color]"} dark:font-medium dark:text-[--font-color]`}
+                    className={`ml-5 text-sm font-semibold ${selectedSubtask?.includes(index) && "text-sidebar-font-color dark:text-sidebar-font-color line-through"} dark:text-font-color dark:font-medium`}
                   >
                     {selectedTasksubtask}
                   </span>
@@ -247,29 +218,16 @@ function TaskDetailModal() {
               ))}
 
               <label
-                htmlFor="status"
-                className="mt-6 inline-block text-sm font-semibold tracking-wide text-[--sidebar-font-color] dark:text-[--font-color]"
+                htmlFor="selctedTask-status"
+                className="text-sidebar-font-color dark:text-font-color mt-6 inline-block text-sm font-semibold tracking-wide"
               >
                 Status
               </label>
-              <select
-                id="status"
-                name="status"
-                type="text"
-                className="input text-sm dark:valid:bg-[--dark-bg-color]"
+              <SelectStatus
+                id="selctedTask-status"
                 value={selectedStatus}
-                onChange={handleSelectedStatus}
-              >
-                <option className="dark:bg-[--dark-bg-app-color]" value="Todo">
-                  Todo
-                </option>
-                <option className="dark:bg-[--dark-app-bg-color]" value="Doing">
-                  Doing
-                </option>
-                <option className="dark:bg-[--dark-app-bg-color]" value="Done">
-                  Done
-                </option>
-              </select>
+                onChange={(e) => onSelectedStatus(e.target.value)}
+              />
             </>
           )}
         </div>

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { getList, getSelectedTaskData } from "../../services/apiTasks";
 
 const PlatformContext = createContext();
 
@@ -7,26 +8,33 @@ function PlatformProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [tasksLoading, setTasksLoading] = useState(false);
   const [showTask, setShowTask] = useState(false);
-  const [getSelectedTask, setGetSelectedTask] = useState([]);
+  const [selectedTaskData, setSelectedTaskData] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [editIsOpen, setEditIsOpen] = useState(false);
 
   let indexArray = [];
 
   useEffect(() => {
-    const getList = async () => {
-      try {
-        setTasksLoading(true);
-        const res = await fetch(
-          "https://660424af2393662c31d0b94c.mockapi.io/list",
-        );
-        const data = await res.json();
-        setTasks(data);
-        setTasksLoading(false);
-      } catch (err) {
-        console.error(new Error("Oops! Fetching Data failed!"));
-      }
+    // const getList = async () => {
+    //   try {
+    //     setTasksLoading(true);
+    //     const res = await fetch(
+    //       "https://660424af2393662c31d0b94c.mockapi.io/list",
+    //     );
+    //     const data = await res.json();
+    //     setTasks(data);
+    //     setTasksLoading(false);
+    //   } catch (err) {
+    //     console.error(new Error("Oops! Fetching Data failed!"));
+    //   }
+    // };
+    const tasks = async () => {
+      setTasksLoading(true);
+      const getTasks = await getList();
+      setTasks(getTasks);
+      setTasksLoading(false);
     };
-    getList();
+    tasks();
   }, []);
 
   const todoList = tasks.filter((todoTask) => todoTask.taskStatus === "Todo");
@@ -35,10 +43,10 @@ function PlatformProvider({ children }) {
   );
   const doneList = tasks.filter((doneTask) => doneTask.taskStatus === "Done");
 
-  const handleAddNewTask = (createdTask) => {
-    console.log(createdTask);
-    setTasks((tasks) => [...tasks, createdTask]);
-  };
+  // const handleAddNewTask = (createdTask) => {
+  //   console.log(createdTask);
+  //   setTasks((tasks) => [...tasks, createdTask]);
+  // };
 
   const handleShowTask = () => {
     setShowTask((showTask) => !showTask);
@@ -46,11 +54,8 @@ function PlatformProvider({ children }) {
 
   const handleShowTaskDetails = async (id) => {
     setIsLoading(true);
-    const getSelectedTask = await fetch(
-      `https://660424af2393662c31d0b94c.mockapi.io/list/${id}`,
-    );
-    const selectedTask = await getSelectedTask.json();
-    setGetSelectedTask(selectedTask);
+    const selectedTask = await getSelectedTaskData(id);
+    setSelectedTaskData(selectedTask);
     setSelectedStatus(selectedTask.taskStatus);
     setIsLoading(false);
   };
@@ -66,15 +71,17 @@ function PlatformProvider({ children }) {
         tasksLoading,
         onTasksLoading: setTasksLoading,
         onIsLoading: setIsLoading,
-        onAddNewTask: handleAddNewTask,
+        // onAddNewTask: handleAddNewTask,
         showTask,
         onShowTask: handleShowTask,
         onTaskDetails: handleShowTaskDetails,
-        selectedTask: getSelectedTask,
-        onGetSelectedTask: setGetSelectedTask,
+        selectedTask: selectedTaskData,
+        onSelectedTaskData: setSelectedTaskData,
         indexArray,
         selectedStatus,
         onSelectedStatus: setSelectedStatus,
+        editIsOpen,
+        onEditOpen: setEditIsOpen,
       }}
     >
       {children}

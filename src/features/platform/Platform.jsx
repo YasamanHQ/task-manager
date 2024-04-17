@@ -10,7 +10,7 @@ function Platform() {
     <div className="flex gap-8">
       {/* Todo */}
       <div className="min-w-[260px] max-w-[300px]">
-        <span className="text-sm font-semibold uppercase tracking-widest text-[--sidebar-font-color]">
+        <span className="text-sidebar-font-color text-sm font-semibold uppercase tracking-widest">
           Todo ({todoList.length})
         </span>
 
@@ -23,7 +23,7 @@ function Platform() {
 
       {/* Doing */}
       <div className="min-w-[260px] max-w-[300px]">
-        <span className="text-sm font-semibold uppercase tracking-widest text-[--sidebar-font-color]">
+        <span className="text-sidebar-font-color text-sm font-semibold uppercase tracking-widest">
           Doing ({doingList.length})
         </span>
 
@@ -36,7 +36,7 @@ function Platform() {
 
       {/* Done */}
       <div className="min-w-[260px] max-w-[300px]">
-        <span className="text-sm font-semibold uppercase tracking-widest text-[--sidebar-font-color]">
+        <span className="text-sidebar-font-color text-sm font-semibold uppercase tracking-widest">
           Done ({doneList.length})
         </span>
 
@@ -48,8 +48,8 @@ function Platform() {
       </div>
 
       {/* New Column */}
-      <div className="group mb-6 mt-11 flex min-w-[300px] cursor-pointer items-center justify-center rounded-md bg-[--add-item-bg-color] transition-all duration-300 dark:bg-[--dark-add-item-bg-color]">
-        <span className="text-2xl font-bold text-[--sidebar-font-color] transition-all duration-300 group-hover:text-[--purple-color]">
+      <div className="bg-add-item-bg-color dark:bg-dark-add-item-bg-color group mb-6 mt-11 flex min-w-[300px] cursor-pointer items-center justify-center rounded-md transition-all duration-300">
+        <span className="text-sidebar-font-color group-hover:text-purple-color text-2xl font-bold transition-all duration-300">
           +New Column
         </span>
       </div>

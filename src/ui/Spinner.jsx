@@ -1,10 +1,10 @@
 function Spinner() {
   return (
-    <div className="absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center bg-[--add-item-bg-color] dark:bg-[--dark-add-item-bg-color]">
+    <div className="bg-add-item-bg-color dark:bg-dark-add-item-bg-color absolute bottom-0 left-0 right-0 top-0 flex items-center justify-center">
       <div role="status">
         <svg
           aria-hidden="true"
-          className="inline h-10 w-10 animate-spin fill-[--purple-color] text-[--sidebar-font-color] dark:text-[--font-color]"
+          className="text-sidebar-font-color fill-purple-color dark:text-font-color inline h-10 w-10 animate-spin"
           viewBox="0 0 100 102"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
