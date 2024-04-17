@@ -77,6 +77,7 @@ function Sidebar({ onHide, isHidden, boards }) {
 
             <label className="inline-flex cursor-pointer items-center">
               <input
+                id="sidebar-checkbox"
                 type="checkbox"
                 className="peer sr-only"
                 checked={JSON.parse(toggle)}

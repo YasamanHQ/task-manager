@@ -15,19 +15,6 @@ function PlatformProvider({ children }) {
   let indexArray = [];
 
   useEffect(() => {
-    // const getList = async () => {
-    //   try {
-    //     setTasksLoading(true);
-    //     const res = await fetch(
-    //       "https://660424af2393662c31d0b94c.mockapi.io/list",
-    //     );
-    //     const data = await res.json();
-    //     setTasks(data);
-    //     setTasksLoading(false);
-    //   } catch (err) {
-    //     console.error(new Error("Oops! Fetching Data failed!"));
-    //   }
-    // };
     const tasks = async () => {
       setTasksLoading(true);
       const getTasks = await getList();
@@ -42,11 +29,6 @@ function PlatformProvider({ children }) {
     (doingTask) => doingTask.taskStatus === "Doing",
   );
   const doneList = tasks.filter((doneTask) => doneTask.taskStatus === "Done");
-
-  // const handleAddNewTask = (createdTask) => {
-  //   console.log(createdTask);
-  //   setTasks((tasks) => [...tasks, createdTask]);
-  // };
 
   const handleShowTask = () => {
     setShowTask((showTask) => !showTask);

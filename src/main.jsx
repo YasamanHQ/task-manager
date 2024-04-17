@@ -5,9 +5,9 @@ import "./index.css";
 import { PlatformProvider } from "./features/platform/PlatformContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <PlatformProvider>
-      <App />
-    </PlatformProvider>
-  </React.StrictMode>,
+  // <React.StrictMode>
+  <PlatformProvider>
+    <App />
+  </PlatformProvider>,
+  // </React.StrictMode>,
 );

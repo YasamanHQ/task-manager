@@ -5,13 +5,9 @@ function Input({
   placeholder,
   value,
   onChange,
+  register,
 }) {
   return (
-    // {errors.title && (
-    //   <p className="text-sm tracking-wide text-red-color">
-    //     Field is empty!
-    //   </p>
-    // )}
     <>
       {className === "input" ? (
         <input
@@ -19,9 +15,9 @@ function Input({
           type={type}
           className={className}
           placeholder={placeholder}
-          // {...register("title", {
-          //   required: true,
-          // })}
+          {...register(`${id}`, {
+            required: true,
+          })}
           value={value}
           onChange={onChange}
         />
@@ -31,9 +27,9 @@ function Input({
           type={type}
           className={className}
           placeholder={placeholder}
-          // {...register("title", {
-          //   required: true,
-          // })}
+          {...register(`${id}`, {
+            required: true,
+          })}
           value={value}
           onChange={onChange}
         />

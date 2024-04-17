@@ -6,16 +6,10 @@ import Input from "../ui/Input";
 import Button from "../ui/Button";
 import SelectStatus from "../ui/SelectStatus";
 import { createNewTask, getList } from "../services/apiTasks";
+import Error from "../ui/Error";
 
 function NewTaskModal({ isOpen, onOpen }) {
-  const {
-    onAddNewTask,
-    onAllTask,
-    onTasksLoading,
-    editIsOpen,
-    onEditOpen,
-    selectedTask,
-  } = usePlatform();
+  const { onAllTask, onTasksLoading, editIsOpen, onEditOpen } = usePlatform();
 
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
@@ -24,8 +18,8 @@ function NewTaskModal({ isOpen, onOpen }) {
   // const [selectedTitle, setSelectedTitle] = useState();
 
   const {
-    register,
     handleSubmit,
+    register,
     formState: { errors },
   } = useForm();
 
@@ -47,10 +41,11 @@ function NewTaskModal({ isOpen, onOpen }) {
 
   const handleSubmitNewTask = async (e) => {
     // e.preventDefault();
-    onOpen((isOpen) => !isOpen);
 
-    if (!newTitle || newSubtasks.includes(""))
+    if (!newTitle || newSubtasks.includes("") || !newDescription)
       throw new Error("Field is empty!");
+
+    onOpen((isOpen) => !isOpen);
 
     const newTask = {
       title: newTitle,
@@ -82,47 +77,57 @@ function NewTaskModal({ isOpen, onOpen }) {
           <label htmlFor="title" className="input-label">
             Title
           </label>
+          {errors.title && <Error />}
           <Input
             id="title"
             placeholder="e.g. Take coffee break"
             value={newTitle}
             onChange={(e) => setNewTitle(e.target.value)}
+            register={register}
           />
 
           <label htmlFor="description" className="input-label">
             Description
           </label>
+          {errors.description && <Error />}
           <Input
             id="description"
             className="description-textarea"
             placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little."
             value={newDescription}
             onChange={(e) => setNewDescription(e.target.value)}
+            register={register}
           />
 
           <label htmlFor="subtask" className="input-label">
             Subtasks
           </label>
           {newSubtasks.map((input, index) => (
-            <div key={index} className="mb-2 flex items-center gap-3">
-              <Input
-                value={input}
-                onChange={(e) => {
-                  const newInputs = [...newSubtasks];
-                  newInputs[index] = e.target.value;
-                  setNewSubtasks(newInputs);
-                }}
-              />
+            <div key={index} className="mb-2">
+              {errors[index] && <Error />}
 
-              <span
-                className="text-sidebar-font-color hover:text-red-color mt-2 cursor-pointer text-3xl transition-all duration-300 hover:opacity-80"
-                onClick={() => {
-                  const newInputs = newSubtasks.filter((_, i) => i !== index);
-                  setNewSubtasks(newInputs);
-                }}
-              >
-                <IoClose />
-              </span>
+              <div className="flex items-center gap-3">
+                <Input
+                  id={index}
+                  value={input}
+                  onChange={(e) => {
+                    const newInputs = [...newSubtasks];
+                    newInputs[index] = e.target.value;
+                    setNewSubtasks(newInputs);
+                  }}
+                  register={register}
+                />
+
+                <span
+                  className="text-sidebar-font-color hover:text-red-color mt-2 cursor-pointer text-3xl transition-all duration-300 hover:opacity-80"
+                  onClick={() => {
+                    const newInputs = newSubtasks.filter((_, i) => i !== index);
+                    setNewSubtasks(newInputs);
+                  }}
+                >
+                  <IoClose />
+                </span>
+              </div>
             </div>
           ))}
 

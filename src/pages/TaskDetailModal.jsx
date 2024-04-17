@@ -29,25 +29,6 @@ function TaskDetailModal() {
 
   const [selectedSubtask, setSelectedSubtask] = useState([]);
   const [showTheOption, setShowTheOption] = useState(false);
-  const initialRender = useRef(false);
-
-  // ----------------------------
-  // Updating task status:
-  useEffect(() => {
-    const updatedTaskObject = { ...selectedTask, taskStatus: selectedStatus };
-
-    if (initialRender.current) {
-      const updateTaskStatus = async (id, updatedTaskObject) => {
-        onIsLoading(true);
-        const getNewStatus = await changeTaskStatus(id, updatedTaskObject);
-        onIsLoading(false);
-      };
-
-      updateTaskStatus(selectedTask.id, updatedTaskObject);
-    }
-
-    initialRender.current = true;
-  }, [selectedStatus]);
 
   // ----------------------------
   // Checking the finished subtasks on initial render:
@@ -61,18 +42,31 @@ function TaskDetailModal() {
   }, [selectedTask]);
 
   // ----------------------------
-  // Closing TaskDetailModal:
+  // Closing TaskDetailModal and Updating task status:
   const handleCloseModal = (e) => {
     if (e.target) {
       onShowTask((showTask) => !showTask);
 
-      const updateAllTasks = async () => {
+      const updatedTaskObject = {
+        ...selectedTask,
+        taskStatus: selectedStatus,
+      };
+      const updateTaskStatus = async (id, updatedTaskObject) => {
+        onTasksLoading(true);
+        if (selectedStatus !== selectedTask.taskStatus) {
+          const getNewStatus = await changeTaskStatus(id, updatedTaskObject);
+        }
         const getTasks = await getList();
         onAllTask(getTasks);
+        onTasksLoading(false);
       };
-      updateAllTasks();
+
+      updateTaskStatus(selectedTask.id, updatedTaskObject);
     }
+
+    // updateAllTasks();
   };
+  // };
 
   // ----------------------------
   // Checking and unchecking the checkboxes:
@@ -203,6 +197,7 @@ function TaskDetailModal() {
                   className="bg-app-bg-color dark:bg-dark-border-color mb-3 rounded-md px-4 py-2"
                 >
                   <input
+                    id={index}
                     type="checkbox"
                     className="accent-purple-color h-4 w-4 bg-slate-500 align-middle"
                     value={index}

@@ -21,7 +21,7 @@ export default {
       "font-color": "#fdfeff",
       "items-bg-color": "#2c2c38",
       "add-item-modal-bg-color": "#03030375",
-      "red-color": "#d60000",
+      "red-color": "#ff2424",
       "dark-bg-color": "#2c2c38",
       "dark-border-color": "#31313d",
       "dark-app-bg-color": "#21212d",
