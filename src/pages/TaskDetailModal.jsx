@@ -63,10 +63,7 @@ function TaskDetailModal() {
 
       updateTaskStatus(selectedTask.id, updatedTaskObject);
     }
-
-    // updateAllTasks();
   };
-  // };
 
   // ----------------------------
   // Checking and unchecking the checkboxes:
@@ -124,9 +121,7 @@ function TaskDetailModal() {
   // Deleting task:
   const handleDeleteTask = () => {
     if (
-      confirm(
-        `Are you sure that you want to delete task "${selectedTask.title}"`,
-      )
+      confirm(`Are you sure that you want to delete "${selectedTask.title}"?`)
     ) {
       const deleteTask = async (id) => {
         const deleteTask = await deleteSelectedTask(id);

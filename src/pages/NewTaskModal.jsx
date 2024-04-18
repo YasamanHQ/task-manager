@@ -5,23 +5,40 @@ import { useForm } from "react-hook-form";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 import SelectStatus from "../ui/SelectStatus";
-import { createNewTask, getList } from "../services/apiTasks";
+import { createNewTask, editSelectedTask, getList } from "../services/apiTasks";
 import Error from "../ui/Error";
 
 function NewTaskModal({ isOpen, onOpen }) {
-  const { onAllTask, onTasksLoading, editIsOpen, onEditOpen } = usePlatform();
-
-  const [newTitle, setNewTitle] = useState("");
-  const [newDescription, setNewDescription] = useState("");
-  const [newSubtasks, setNewSubtasks] = useState([""]);
-  const [newStatus, setNewStatus] = useState("Todo");
-  // const [selectedTitle, setSelectedTitle] = useState();
-
   const {
     handleSubmit,
     register,
     formState: { errors },
   } = useForm();
+
+  const {
+    onAllTask,
+    onTasksLoading,
+    editIsOpen,
+    onEditOpen,
+    selectedTask,
+    selectedStatus,
+    onSelectedStatus,
+  } = usePlatform();
+
+  // New task states:
+  const [newTitle, setNewTitle] = useState("");
+  const [newDescription, setNewDescription] = useState("");
+  const [newSubtasks, setNewSubtasks] = useState([""]);
+  const [newStatus, setNewStatus] = useState("Todo");
+
+  // edit task states:
+  const [selectedTitle, setSelectedTitle] = useState(selectedTask.title);
+  const [selectedDescription, setSelectedDescription] = useState(
+    selectedTask.description,
+  );
+  const [selectedSubtasks, setSelectedSubtasks] = useState(
+    selectedTask.subtasks,
+  );
 
   const handleCloseModal = (e) => {
     if (e.target) {
@@ -36,12 +53,14 @@ function NewTaskModal({ isOpen, onOpen }) {
 
   const handleAddSubtask = (e) => {
     e.preventDefault();
-    setNewSubtasks([...newSubtasks, ""]);
+    if (editIsOpen) {
+      setSelectedSubtasks([...selectedSubtasks, ""]);
+    } else {
+      setNewSubtasks([...newSubtasks, ""]);
+    }
   };
 
   const handleSubmitNewTask = async (e) => {
-    // e.preventDefault();
-
     if (!newTitle || newSubtasks.includes("") || !newDescription)
       throw new Error("Field is empty!");
 
@@ -58,6 +77,25 @@ function NewTaskModal({ isOpen, onOpen }) {
 
     onTasksLoading(true);
     const createNewTak = await createNewTask(newTask);
+    const updatedTasks = await getList();
+    onAllTask(updatedTasks);
+    onTasksLoading(false);
+  };
+
+  const handleEditTask = async (id) => {
+    const editedTask = {
+      title: selectedTitle,
+      description: selectedDescription,
+      subtasks: selectedSubtasks,
+      finishedSubtasks: selectedTask.finishedSubtasks,
+      taskStatus: selectedStatus,
+      id: selectedTask.id,
+    };
+
+    onTasksLoading(true);
+    const createNewTak = await editSelectedTask(id, editedTask);
+    onEditOpen((editIsOpen) => !editIsOpen);
+
     const updatedTasks = await getList();
     onAllTask(updatedTasks);
     onTasksLoading(false);
@@ -81,8 +119,12 @@ function NewTaskModal({ isOpen, onOpen }) {
           <Input
             id="title"
             placeholder="e.g. Take coffee break"
-            value={newTitle}
-            onChange={(e) => setNewTitle(e.target.value)}
+            value={editIsOpen ? selectedTitle : newTitle}
+            onChange={(e) =>
+              editIsOpen
+                ? setSelectedTitle(e.target.value)
+                : setNewTitle(e.target.value)
+            }
             register={register}
           />
 
@@ -94,42 +136,79 @@ function NewTaskModal({ isOpen, onOpen }) {
             id="description"
             className="description-textarea"
             placeholder="e.g. It's always good to take a break. This 15 minute break will recharge the batteries a little."
-            value={newDescription}
-            onChange={(e) => setNewDescription(e.target.value)}
+            value={editIsOpen ? selectedDescription : newDescription}
+            onChange={(e) =>
+              editIsOpen
+                ? setSelectedDescription(e.target.value)
+                : setNewDescription(e.target.value)
+            }
             register={register}
           />
 
           <label htmlFor="subtask" className="input-label">
             Subtasks
           </label>
-          {newSubtasks.map((input, index) => (
-            <div key={index} className="mb-2">
-              {errors[index] && <Error />}
+          {editIsOpen
+            ? selectedSubtasks.map((input, index) => (
+                <div key={index} className="mb-2">
+                  {errors[index] && <Error />}
 
-              <div className="flex items-center gap-3">
-                <Input
-                  id={index}
-                  value={input}
-                  onChange={(e) => {
-                    const newInputs = [...newSubtasks];
-                    newInputs[index] = e.target.value;
-                    setNewSubtasks(newInputs);
-                  }}
-                  register={register}
-                />
+                  <div className="flex items-center gap-3">
+                    <Input
+                      id={index}
+                      value={input}
+                      onChange={(e) => {
+                        const newInputs = [...selectedSubtasks];
+                        newInputs[index] = e.target.value;
+                        setSelectedSubtasks(newInputs);
+                      }}
+                      register={register}
+                    />
 
-                <span
-                  className="text-sidebar-font-color hover:text-red-color mt-2 cursor-pointer text-3xl transition-all duration-300 hover:opacity-80"
-                  onClick={() => {
-                    const newInputs = newSubtasks.filter((_, i) => i !== index);
-                    setNewSubtasks(newInputs);
-                  }}
-                >
-                  <IoClose />
-                </span>
-              </div>
-            </div>
-          ))}
+                    <span
+                      className="text-sidebar-font-color hover:text-red-color mt-2 cursor-pointer text-3xl transition-all duration-300 hover:opacity-80"
+                      onClick={() => {
+                        const newInputs = selectedSubtasks.filter(
+                          (_, i) => i !== index,
+                        );
+                        setSelectedSubtasks(newInputs);
+                      }}
+                    >
+                      <IoClose />
+                    </span>
+                  </div>
+                </div>
+              ))
+            : newSubtasks.map((input, index) => (
+                <div key={index} className="mb-2">
+                  {errors[index] && <Error />}
+
+                  <div className="flex items-center gap-3">
+                    <Input
+                      id={index}
+                      value={input}
+                      onChange={(e) => {
+                        const newInputs = [...newSubtasks];
+                        newInputs[index] = e.target.value;
+                        setNewSubtasks(newInputs);
+                      }}
+                      register={register}
+                    />
+
+                    <span
+                      className="text-sidebar-font-color hover:text-red-color mt-2 cursor-pointer text-3xl transition-all duration-300 hover:opacity-80"
+                      onClick={() => {
+                        const newInputs = newSubtasks.filter(
+                          (_, i) => i !== index,
+                        );
+                        setNewSubtasks(newInputs);
+                      }}
+                    >
+                      <IoClose />
+                    </span>
+                  </div>
+                </div>
+              ))}
 
           <Button
             className="hover:bg-hover-button-purple-color bg-purple-color dark:text-purple-color dark:hover:bg-purple-color text-font-color dark:bg-font-color dark:hover:text-font-color mt-2"
@@ -143,17 +222,31 @@ function NewTaskModal({ isOpen, onOpen }) {
           </label>
           <SelectStatus
             id="status"
-            value={newStatus}
-            onChange={(e) => setNewStatus(e.target.value)}
+            value={editIsOpen ? selectedStatus : newStatus}
+            onChange={(e) =>
+              editIsOpen
+                ? onSelectedStatus(e.target.value)
+                : setNewStatus(e.target.value)
+            }
           />
 
-          <Button
-            type="submit"
-            onClick={handleSubmit(handleSubmitNewTask)}
-            className="hover:bg-hover-button-purple-color dark:hover:text-purple-color dark:hover:bg-font-color mt-8"
-          >
-            Create Task
-          </Button>
+          {editIsOpen ? (
+            <Button
+              type="submit"
+              onClick={handleSubmit(() => handleEditTask(selectedTask.id))}
+              className="hover:bg-hover-button-purple-color dark:hover:text-purple-color dark:hover:bg-font-color mt-8"
+            >
+              Edit Task
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              onClick={handleSubmit(handleSubmitNewTask)}
+              className="hover:bg-hover-button-purple-color dark:hover:text-purple-color dark:hover:bg-font-color mt-8"
+            >
+              Create Task
+            </Button>
+          )}
         </form>
       </div>
     </>

@@ -53,7 +53,6 @@ function PlatformProvider({ children }) {
         tasksLoading,
         onTasksLoading: setTasksLoading,
         onIsLoading: setIsLoading,
-        // onAddNewTask: handleAddNewTask,
         showTask,
         onShowTask: handleShowTask,
         onTaskDetails: handleShowTaskDetails,

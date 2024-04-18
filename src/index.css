@@ -20,7 +20,7 @@
 
 @layer components {
   .input-label {
-    @apply mt-6 inline-block flex justify-between text-sm font-semibold;
+    @apply mt-6 inline-block text-sm font-medium;
   }
 
   .input {

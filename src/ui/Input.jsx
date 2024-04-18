@@ -11,6 +11,7 @@ function Input({
     <>
       {className === "input" ? (
         <input
+          autoComplete="off"
           id={id}
           type={type}
           className={className}
