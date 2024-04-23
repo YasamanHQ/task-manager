@@ -26,7 +26,7 @@ function AppLayout() {
 
   return (
     <div
-      className={`bg-app-bg-color dark:bg-dark-border-color relative grid h-[100vh] w-[100vw] grid-cols-[18rem_1fr] grid-rows-[auto_1fr] overflow-hidden font-sans transition-all duration-300`}
+      className={`relative grid h-[100vh] w-[100vw] grid-cols-[18rem_1fr] grid-rows-[auto_1fr] overflow-hidden bg-app-bg-color font-sans transition-all duration-300 dark:bg-dark-border-color`}
     >
       <Header isHidden={isHidden} onOpen={setIsOpen} />
       <Sidebar isHidden={isHidden} onHide={handleSidebar} boards={boards} />
